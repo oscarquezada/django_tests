@@ -25,16 +25,13 @@ jobs:
         run: |
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/oscarquezada/django_tests.git
 
-          - name: Asegurar que las ramas servidor y pruebas existen
-          run: |
-            git fetch --all
+      - name: Asegurar que las ramas servidor y pruebas existen
+        run: |
+          git fetch --all
+          git checkout servidor
+          git reset --hard origin/pruebas
+          git push origin servidor --force
 
-            git checkout servidor || git checkout -b servidor origin/servidor
-            git reset --hard origin/servidor
-            git branch --track pruebas origin/pruebas || git checkout pruebas
-            git checkout servidor
-            git merge -X theirs pruebas -m "Merge branch 'pruebas' into servidor"
-            git push origin servidor --force
         
 
       - name: Iniciar Docker daemon
