@@ -9,9 +9,12 @@ class LiveProductoTest(LiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        # Configura el WebDriver (por ejemplo, Firefox)
-        cls.selenium = webdriver.Firefox()
+        from selenium.webdriver.firefox.options import Options
+        options = Options()
+        options.add_argument("--headless")  # Ejecuta en modo headless
+        cls.selenium = webdriver.Firefox(options=options)
         cls.selenium.implicitly_wait(10)
+
 
     @classmethod
     def tearDownClass(cls):
