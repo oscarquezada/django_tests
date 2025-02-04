@@ -2,7 +2,7 @@ name: Django CD with Docker
 
 on:
   workflow_run:
-    workflows: ["Django CI with Docker"]
+    workflows: ["Django CI with Virtualenv"]
     types:
       - completed
 
