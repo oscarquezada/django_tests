@@ -20,8 +20,8 @@ jobs:
 
       - name: Corregir permisos antes del checkout
         run: |
-          sudo chown -R $(whoami) /home/vboxuser/django_test_docker
-          sudo chmod -R 777 /home/vboxuser/django_test_docker
+          sudo chown -R $(whoami) /home/vboxuser/django_test
+          sudo chmod -R 777 /home/vboxuser/django_test
 
       - name: Clonar el repositorio
         uses: actions/checkout@v4
