@@ -1,0 +1,37 @@
+name: Django CD with Docker
+
+on:
+  workflow_run:
+    workflows: ["Django CI with Docker"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: self-hosted
+    steps:
+    - name: Clonar el repositorio
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 
+    - name: Configurar Git
+      run: |
+        git config --global user.name "oscar"
+        git config --global user.email "oscar.r.quezadar@gmail.com"
+
+    - name: Autenticar GitHub Actions con el token
+      run: |
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/oscarquezada/django_test_docker.git
+  
+    - name: Asegurar que las ramas production y pruebas existen
+      run: |
+        git fetch --all
+        git checkout production || git checkout -b production origin/production
+        git branch --track pruebas origin/pruebas || git checkout pruebas
+        git merge --ff-only pruebas
+        git push origin production
+    - name: Levantar contenedores en linux
+      run: |
+        docker-compose -f docker-compose.yml down
+        docker-compose -f docker-compose.yml up --build -d
