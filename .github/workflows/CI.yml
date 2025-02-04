@@ -43,6 +43,8 @@ jobs:
             -v ${{ github.workspace }}:/app \
             django-test \
             sh -c "coverage report --fail-under=62"
-
+      - name: Ajustar permisos de htmlcov
+        run: chmod -R 777 htmlcov
+          
       - name: Limpiar directorio htmlcov para evitar problemas de permisos
         run: rm -rf htmlcov
