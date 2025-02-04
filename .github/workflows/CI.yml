@@ -5,7 +5,7 @@ on:
     branches: [ "pruebas" ]
   pull_request:
     branches: [ "pruebas" ]
-
+ 
 jobs:
   build:
     runs-on: self-hosted
