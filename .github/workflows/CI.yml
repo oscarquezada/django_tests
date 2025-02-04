@@ -1,4 +1,4 @@
-name: Django CI with Virtualenv
+name: Django CI with Docker
 
 on:
   push:

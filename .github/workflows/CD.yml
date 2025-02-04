@@ -2,41 +2,36 @@ name: Django CD with Docker
 
 on:
   workflow_run:
-    workflows: ["Django CI with Virtualenv"]
+    workflows: ["Django CI with Docker"]
     types:
       - completed
 
 jobs:
   deploy:
-    # Sólo se ejecuta si el workflow de CI finalizó exitosamente
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: self-hosted
     steps:
-      - name: Clonar el repositorio
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+    - name: Clonar el repositorio
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 
+    - name: Configurar Git
+      run: |
+        git config --global user.name "oscar"
+        git config --global user.email "oscar.r.quezadar@gmail.com"
 
-      - name: Configurar Git
-        run: |
-          git config --global user.name "oscar"
-          git config --global user.email "oscar.r.quezadar@gmail.com"
-
-      - name: Autenticar GitHub Actions con el token
-        run: |
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/oscarquezada/django_tests.git
-
-      - name: Asegurar que las ramas servidor y pruebas existen
-        run: |
-          git fetch --all
-          # Si la rama "servidor" no existe localmente, se crea a partir de origin/servidor
-          git checkout servidor || git checkout -b servidor origin/servidor
-          # Se asegura que la rama "pruebas" esté presente y se une a "servidor"
-          git branch --track pruebas origin/pruebas || git checkout pruebas
-          git merge --ff-only pruebas
-          git push origin servidor
-
-      - name: Levantar contenedores en Linux
-        run: |
-          docker-compose -f docker-compose.yml down
-          docker-compose -f docker-compose.yml up --build -d
+    - name: Autenticar GitHub Actions con el token
+      run: |
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/oscarquezada/django_tests.git
+  
+    - name: Asegurar que las ramas servidor y pruebas existen
+      run: |
+        git fetch --all
+        git checkout servidor || git checkout -b servidor origin/servidor
+        git branch --track pruebas origin/pruebas || git checkout pruebas
+        git merge --ff-only pruebas
+        git push origin servidor
+    - name: Levantar contenedores en linux
+      run: |
+        docker-compose -f docker-compose.yml down
+        docker-compose -f docker-compose.yml up --build -d
