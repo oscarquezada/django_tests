@@ -26,7 +26,7 @@ jobs:
   
     - name: Asegurar que las ramas servidor y pruebas existen
       run: |
-      
+
         git fetch --all
         git checkout servidor || git checkout -b servidor origin/servidor
         git branch --track pruebas origin/pruebas || git checkout pruebas
@@ -36,5 +36,5 @@ jobs:
       
     - name: Levantar contenedores en linux
       run: |
-        docker-compose -f docker-compose.yml down
-        docker-compose -f docker-compose.yml up --build -d
+        sudo docker-compose -f docker-compose.yml down
+        sudo docker-compose -f docker-compose.yml up --build -d
