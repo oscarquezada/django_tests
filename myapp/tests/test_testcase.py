@@ -1,5 +1,6 @@
 from django.test import TestCase
 from myapp.models import Producto, Cliente, Pedido
+from decimal import Decimal
 
 class ProductoTestCase(TestCase):
 
@@ -15,11 +16,11 @@ class ProductoTestCase(TestCase):
         self.prod1.precio = 1099.99
         self.prod1.save()
         self.prod1.refresh_from_db()
-        self.assertEqual(self.prod1.precio, 1099.99)
+        self.assertEqual(self.prod1.precio, Decimal('1099.99'))
 
     def test_busqueda_producto(self):
         prod = Producto.objects.get(nombre="Laptop")
-        self.assertEqual(prod.precio, 999.99)
+        self.assertEqual(prod.precio, Decimal('999.99'))
 
     def test_eliminacion_producto(self):
         prod = Producto.objects.get(nombre="Tablet")
