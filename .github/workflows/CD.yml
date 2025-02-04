@@ -29,8 +29,10 @@ jobs:
         git fetch --all
         git checkout servidor || git checkout -b servidor origin/servidor
         git branch --track pruebas origin/pruebas || git checkout pruebas
-        git merge --ff-only pruebas
+        git checkout servidor
+        git merge --no-ff pruebas -m "Merge branch 'pruebas' into servidor"
         git push origin servidor
+      
     - name: Levantar contenedores en linux
       run: |
         docker-compose -f docker-compose.yml down
