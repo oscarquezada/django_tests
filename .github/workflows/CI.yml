@@ -13,40 +13,23 @@ jobs:
       PYTHONDONTWRITEBYTECODE: 1
 
     steps:
-      - name: Instalar dependencias del sistema
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y python3 python3-pip python3-venv
-
       - name: Corregir permisos antes del checkout
         run: |
-          sudo chown -R $(whoami) /home/vboxuser/django_tests
-          sudo chmod -R 777 /home/vboxuser/django_tests
+          sudo chown -R $(whoami) ${{ github.workspace }}
+          sudo chmod -R 777 ${{ github.workspace }}
 
       - name: Clonar el repositorio
         uses: actions/checkout@v4
 
-      - name: Crear y activar entorno virtual e instalar dependencias
-        run: |
-          python3 -m venv venv
-          source venv/bin/activate
-          pip install --upgrade pip
-          # Instala las dependencias del proyecto; asegúrate de tener requirements.txt
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          pip install coverage
-          # Si no tienes requirements.txt y deseas instalar Django directamente, descomenta la siguiente línea:
-          # pip install django
+      - name: Construir imagen de Docker para tests
+        run: docker build -t django-test .
 
       - name: Ejecutar tests de Django con cobertura
         run: |
-          source venv/bin/activate
-          # Ejecuta los tests y mide la cobertura de todo el proyecto (ajusta --source según convenga)
-          coverage run --source=. manage.py test
-
-      - name: Generar reporte de cobertura en HTML
-        run: |
-          source venv/bin/activate
-          coverage html
+          docker run --rm \
+            -v ${{ github.workspace }}:/app \
+            django-test \
+            sh -c "coverage run --source=. manage.py test && coverage html"
 
       - name: Subir reporte de cobertura como artefacto
         uses: actions/upload-artifact@v4
@@ -56,9 +39,10 @@ jobs:
 
       - name: Reporte de cobertura y verificación del mínimo requerido
         run: |
-          source venv/bin/activate
-          coverage report --fail-under=62
+          docker run --rm \
+            -v ${{ github.workspace }}:/app \
+            django-test \
+            sh -c "coverage report --fail-under=62"
 
       - name: Limpiar directorio htmlcov para evitar problemas de permisos
-        run: |
-          rm -rf htmlcov
+        run: rm -rf htmlcov
