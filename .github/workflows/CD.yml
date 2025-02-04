@@ -22,7 +22,7 @@ jobs:
 
     - name: Autenticar GitHub Actions con el token
       run: |
-        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/oscarquezada/django_test_docker.git
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/oscarquezada/django_tests.git
   
     - name: Asegurar que las ramas production y pruebas existen
       run: |
