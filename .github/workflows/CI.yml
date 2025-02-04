@@ -33,17 +33,16 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
           docker-compose version
 
-      - name: Eliminar contenedores antiguos
-        run: |
-          docker-compose down --remove-orphans || true
-          docker container prune -f
-          docker volume prune -f
-          docker system prune -af
 
-      - name: Construir y levantar contenedores con Docker
+      - name: Remove old docker-compose
         run: |
-          docker-compose -f docker-compose.yml up --build -d
-          docker ps
+          sudo apt-get remove -y docker-compose || true
+      - name: Install docker-compose
+        run: |
+          sudo sh -c 'curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose'
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
+
 
       - name: Ejecutar tests de Django dentro del contenedor
         run: |
