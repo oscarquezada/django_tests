@@ -36,20 +36,19 @@ jobs:
 
       - name: Remove old docker-compose
         run: |
-          # Elimina cualquier archivo previo (si existe) en /usr/local/bin
+         # 1. Elimina cualquier rastro previo de docker-compose (no causa error si no existe)
+          sudo apt-get remove -y docker-compose || true
           sudo rm -f /usr/local/bin/docker-compose
 
-          # Descarga Docker Compose usando sudo y ejecuta toda la redirección como root
-          sudo sh -c 'curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose'
+          # 2. Descarga Docker Compose usando tee para que la redirección se ejecute con privilegios de root
+          sudo sh -c 'curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" | tee /usr/local/bin/docker-compose > /dev/null'
 
-          # Asigna permisos de ejecución al binario
+          # 3. Asigna permisos de ejecución al binario descargado
           sudo chmod +x /usr/local/bin/docker-compose
 
-          # (Opcional) Asegúrate de que /usr/local/bin está en el PATH
-          export PATH=/usr/local/bin:$PATH
-
-          # Verifica la instalación
+          # 4. Verifica la instalación
           docker-compose --version
+
 
 
 
